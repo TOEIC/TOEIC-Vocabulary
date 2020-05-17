@@ -51,13 +51,16 @@ class ToeicsController extends Controller
           foreach ($uservocabularies as $uservocabulary) {
                $uservc = $uservocabulary->vocabularies_id;
            }
+           $data=[
+             'vocabularies_id'=>$uservc,
+           ];
 
-          return($uservc);
+          return view('toeic.index',$data);
 
         }
 //
 
-        return(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get()->count());
+      //  return(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get()->count());
 
     }
 
