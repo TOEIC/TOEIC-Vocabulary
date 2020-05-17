@@ -41,21 +41,32 @@ class ToeicsController extends Controller
           uservocabularies::create($att);
           return redirect()->route('toeic.index');
 
-
-
-
-
         }else{
 
           $uservocabularies=uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get();
           foreach ($uservocabularies as $uservocabulary) {
                $uservc = $uservocabulary->vocabularies_id;
+               $uservc_num = $uservocabulary->num;
            }
-           $data=[
+           /*$data=[
              'vocabularies_id'=>$uservc,
-           ];
+           ];*/
+           $uservc_array=[];
+           $i_tmp=0;
 
-          return view('toeic.index',$data);
+           for($i=1;$i<=strlen($uservc);$i++){
+
+              if(substr($uservc,$i-1,1)==','){
+
+                echo substr($uservc,$i_tmp,$i-$i_tmp-1).'<br>';
+                $i_tmp=$i;
+              }
+              elseif($i==strlen($uservc)){
+
+                echo substr($uservc,$i_tmp,$i-$i_tmp).'<br>';
+              }
+           }
+          echo now();
 
         }
 //
