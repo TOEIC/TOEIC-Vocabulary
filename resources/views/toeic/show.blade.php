@@ -2,39 +2,40 @@
 @section('title', '歷史單字')
 @section('content')
 <div class="container">
+<form id="history" method="get" action="{{route('toeic.show')}}">
 
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Year
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">Action</a>
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
-    </div>
-  </div>
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Month
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">Action</a>
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
-    </div>
-  </div>
-  <div class="btn-group">
-    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Day
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">Action</a>
-      <a class="dropdown-item" href="#">Another action</a>
-      <a class="dropdown-item" href="#">Something else here</a>
-    </div>
+  @csrf
+  <div class="btn-group col-md-12">
+    <div class="col-md-4">
+        <label for="Year">Year</label>
+        <select id="Year" name="Year"class="form-control" requested>
+          <option>2020</option>
+          <option>2019</option>
+
+        </select>
+      </div>
+      <div class="col-md-4">
+          <label for="Month">Month</label>
+          <select id="Month" name="Month" class="form-control" requested>
+            <option>05</option>
+            <option>04</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+            <label for="Day">Day</label>
+            <select id="Day" name="Day" class="form-control" requested>
+              <option>20</option>
+              <option>19</option>
+              <option>18</option>
+            </select>
+          </div>
+
   </div>
 
-<button type="button" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary" >submit</button>
+
+
+</form>
 
 
 
@@ -52,6 +53,7 @@ Part of speech</th>
   </thead>
   <tbody>
 
+
     @foreach ($vocabularies as $vocabularies =>$vocabulary )
 
       <tr>
@@ -65,6 +67,7 @@ Part of speech</th>
 
   </tbody>
 </table>
+
 
 </div>
 @endsection

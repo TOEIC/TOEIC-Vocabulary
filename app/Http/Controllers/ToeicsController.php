@@ -83,13 +83,6 @@ class ToeicsController extends Controller
                    return view('toeic.index',$data);
 
 
-
-
-
-
-
-
-
                 }//else
         //******************************************************************************************************************
 
@@ -134,12 +127,25 @@ class ToeicsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($date=null)
+    public function show(Request $request)
     {
+      $Year=$request->input('Year');
+      $Month=$request->input('Month');
+      $Day=$request->input('Day');
 
-      if(isset($date)==false){$date=date("Y-m-d");}
+     if(isset($Year)==false){$date=date("Y-m-d");}
+     else{
 
-      
+       $Ymd=$Year.'-'.$Month.'-'.$Day;
+       $date=$Ymd;
+
+     }
+      if(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',$date)->get()->count()=='0'){
+        echo "<script>alert('查無資料');window.history.back();</script>";
+
+        // return redirect()->back()->with('alert','hello');
+      }
+
       $uservocabularies=uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',$date)->get();
       foreach ($uservocabularies as $uservocabulary) {
            //讀出使用者每日單字資料
