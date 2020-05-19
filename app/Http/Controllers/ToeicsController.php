@@ -16,15 +16,71 @@ class ToeicsController extends Controller
     public function index()
     {
         //
-      /*  $vocabularies=DB::select('select * from vocabulary ORDER BY RAND() limit '.auth()->user()->several);
+    /*    $vocabularies=DB::select('select * from vocabulary ORDER BY RAND() limit '.auth()->user()->several);
         $data=[
           'vocabularies'=>$vocabularies,
         ];
-        return view('toeic.index',$data);*/
+        return view('toeic.index',$data);
+*/
 
 
-    /*    $uservocabularies_count =uservocabularies::withCount(['uservocabularies' => function ($query) {
-        $query->where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"));}])->get();*/
+               //判斷當天有無單字沒有就新增
+               if(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get()->count()=='0'){
+
+                  $vocabularies=vocabulary::all()->random(auth()->user()->several);
+
+                  $vocabulary_str="";
+
+                  foreach ($vocabularies as $vocabulary) {
+                    $vocabulary_str=$vocabulary_str.$vocabulary->num.',';
+                  }
+
+                  $vocabulary_str=substr($vocabulary_str,0,-1);
+
+
+                  $att['svdate'] = date("Y-m-d");
+                  $att['uid'] = auth()->user()->id;
+                  $att['num'] = auth()->user()->several;
+                  $att['vocabularies_id'] = $vocabulary_str;
+                  uservocabularies::create($att);
+                  return redirect()->route('toeic.index');
+                }
+                else{
+
+                  $uservocabularies=uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get();
+                  foreach ($uservocabularies as $uservocabulary) {
+                       //讀出使用者每日單字資料
+                       $uservc = $uservocabulary->vocabularies_id;
+                       //讀出使用者每日單字資料個數
+                       $uservc_num = $uservocabulary->num;
+                   }//foreach
+
+                   //儲存使用者每日單字陣列
+                   $uservc_array=[];
+                   //每日單字陣列計數
+                   $array_num=1;
+                   //取分隔符號目前位置紀錄
+                   $i_tmp=0;
+                   //把ID字串每個字分出來判斷
+                   for($i=1;$i<=strlen($uservc);$i++){
+                      //把單字ID分隔(去，)，存入陣列
+                      if(substr($uservc,$i-1,1)==','){
+                        $uservc_array[$array_num]=substr($uservc,$i_tmp,$i-$i_tmp-1);
+                        $i_tmp=$i;
+                        $array_num=$array_num+1;
+                      }
+                      elseif($i==strlen($uservc)){
+                        $uservc_array[$array_num]=substr($uservc,$i_tmp,$i-$i_tmp);
+                      }
+                   }//for
+                  //echo $uservc ;
+
+                  $uservocabularies_show=vocabulary::whereIn('num', $uservc_array)->get();
+
+                   $data=[
+                     'vocabularies'=>$uservocabularies_show,
+                   ];
+                   return view('toeic.index',$data);
 
 
 
@@ -32,44 +88,20 @@ class ToeicsController extends Controller
 
 
 
-       if(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get()->count()=='0'){
 
-          $att['svdate'] = date("Y-m-d");
-          $att['uid'] = auth()->user()->id;
-          $att['num'] = auth()->user()->several;
-          $att['vocabularies_id'] = '2,4,6,8,10,12,14,16,18,20';
-          uservocabularies::create($att);
-          return redirect()->route('toeic.index');
 
-        }else{
+                }//else
+        //******************************************************************************************************************
 
-          $uservocabularies=uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get();
-          foreach ($uservocabularies as $uservocabulary) {
-               $uservc = $uservocabulary->vocabularies_id;
-               $uservc_num = $uservocabulary->num;
-           }
-           /*$data=[
-             'vocabularies_id'=>$uservc,
-           ];*/
-           $uservc_array=[];
-           $i_tmp=0;
 
-           for($i=1;$i<=strlen($uservc);$i++){
 
-              if(substr($uservc,$i-1,1)==','){
 
-                echo substr($uservc,$i_tmp,$i-$i_tmp-1).'<br>';
-                $i_tmp=$i;
-              }
-              elseif($i==strlen($uservc)){
 
-                echo substr($uservc,$i_tmp,$i-$i_tmp).'<br>';
-              }
-           }
-          echo now();
 
-        }
-//
+
+
+             //echo $uservc;
+
 
       //  return(uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',date("Y-m-d"))->get()->count());
 
@@ -104,11 +136,50 @@ class ToeicsController extends Controller
      */
     public function show($date=null)
     {
-        //
-        $data=[
-          'date'=>$date
-        ];
-        return view('toeic.show',$data);
+
+      if(isset($date)==false){$date=date("Y-m-d");}
+
+      
+      $uservocabularies=uservocabularies::where('uid','=',auth()->user()->id)->where('svdate','=',$date)->get();
+      foreach ($uservocabularies as $uservocabulary) {
+           //讀出使用者每日單字資料
+           $uservc = $uservocabulary->vocabularies_id;
+           //讀出使用者每日單字資料個數
+           $uservc_num = $uservocabulary->num;
+       }//foreach
+
+         //儲存使用者每日單字陣列
+         $uservc_array=[];
+         //每日單字陣列計數
+         $array_num=1;
+         //取分隔符號目前位置紀錄
+         $i_tmp=0;
+         //把ID字串每個字分出來判斷
+         for($i=1;$i<=strlen($uservc);$i++){
+            //把單字ID分隔(去，)，存入陣列
+            if(substr($uservc,$i-1,1)==','){
+              $uservc_array[$array_num]=substr($uservc,$i_tmp,$i-$i_tmp-1);
+              $i_tmp=$i;
+              $array_num=$array_num+1;
+            }
+            elseif($i==strlen($uservc)){
+              $uservc_array[$array_num]=substr($uservc,$i_tmp,$i-$i_tmp);
+            }
+         }//for
+        //echo $uservc ;
+
+        $uservocabularies_show=vocabulary::whereIn('num', $uservc_array)->get();
+
+         $data=[
+           'vocabularies'=>$uservocabularies_show,
+         ];
+
+         return view('toeic.show',$data);
+
+
+
+
+
     }
 
     public function level($level)
@@ -125,19 +196,7 @@ class ToeicsController extends Controller
         return view('toeic.level',$data);
     }
 
-    /*public function level($level=null)
-    {
-        //
-        //$vocabularies=DB::select('select * from vocabulary where level=?',[$level]);
 
-        $vocabularies=vocabulary::where('level','=',$level)->paginate(50);
-
-
-        $data=[
-          'vocabularies'=>$vocabularies,
-        ];
-        return view('toeic.level',$data);
-    }*/
 
     /**
      * Show the form for editing the specified resource.

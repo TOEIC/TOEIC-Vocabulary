@@ -11,6 +11,7 @@ class vocabulary extends Model
     protected $table = "vocabulary"; //指定資料表名稱
     // public $timestamps = false; //若要取消時間戳記
     protected $fillable = [ //新增的欄位名稱
+        'num',
         'level',
         'en',
         'pos',
